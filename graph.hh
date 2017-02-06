@@ -18,6 +18,7 @@ public:
   void message(int loop_id);
 
   graph_edge(graph_vertex* node, method_desc* method, callee_desc* call) { 
+    next =  NULL;
     invocation = call;
     caller = method;
     vertex = node;
@@ -50,6 +51,7 @@ public:
   }
 
   graph_vertex(class_desc* vertex_class) { 
+    n_loops = 0;
     cls = vertex_class;
     visited = 0;
     marker = flag_vertex_not_marked;

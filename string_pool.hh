@@ -67,7 +67,7 @@ public:
   }
 
   void clear() {
-    for (string_table::iterator it = pool.begin(); it != pool.end(); it++) {
+    for (string_table::iterator it = pool.begin(); it != pool.end(); ++it) {
       free(const_cast<char*>(*it));
       pool.erase(it);
     }

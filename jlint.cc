@@ -7,7 +7,7 @@
 //   Version 3.0:   Last update: 20-Aug-03    Raphael Ackermann      |        |
 //   Version 3.1:   Last update: 13-Oct-06    Cyrille Artho          |        |
 //-------------------------------------------------------------------+--------+
-// Java verifier 
+// Java verifier
 //-------------------------------------------------------------------+--------+
 
 #include <stdio.h>
@@ -43,7 +43,7 @@ FILE* history;
 string_pool stringPool;
 field_desc* is_const;
 
-message_descriptor msg_table[] = 
+message_descriptor msg_table[] =
   {
 #define MSG(category, code, position_dependent, format) \
    {cat_##category, MSG_LOCATION_PREFIX format, #code, position_dependent, true},
@@ -51,11 +51,11 @@ message_descriptor msg_table[] =
     {cat_all}
   };
 
-unsigned int string_hash_function(byte* p) { 
+unsigned int string_hash_function(byte* p) {
   unsigned int h = 0, g;
-  while(*p) { 
+  while(*p) {
     h = (h << 4) + *p++;
-    if ((g = h & 0xF0000000) != 0) { 
+    if ((g = h & 0xF0000000) != 0) {
       h ^= g >> 24;
     }
     h &= ~g;
@@ -80,11 +80,11 @@ int get_number_of_parameters(utf_string const& str)
   const char* p = str.as_asciz();
   assert(*p++ =='(');
   int n_params = 0;
-  while (*p != ')') { 
-    switch (*p++) { 
+  while (*p != ')') {
+    switch (*p++) {
     case '[':
       while (*p == '[') p += 1;
-      if (*p++ == 'L') { 
+      if (*p++ == 'L') {
         while (*p++ != ';');
       }
       n_params += 1;
@@ -101,22 +101,22 @@ int get_number_of_parameters(utf_string const& str)
     }
   }
   return n_params;
-} 
+}
 
-int get_type(utf_string const& str) 
-{ 
+int get_type(utf_string const& str)
+{
   const char* p = str.as_asciz();
-  if (*p == '(') { 
-    while (*++p != ')'); 
+  if (*p == '(') {
+    while (*++p != ')');
     p += 1;
   }
   int indirect = 0;
-  while (*p == '[') { 
+  while (*p == '[') {
     p += 1;
     indirect += 1;
   }
   type_tag tag = tp_object;
-  switch (*p) { 
+  switch (*p) {
   case 'I': tag = tp_int; break;
   case 'S': tag = tp_short; break;
   case 'D': tag = tp_double; break;
@@ -134,7 +134,7 @@ int get_type(utf_string const& str)
 
 //
 // All messages are reported by this function
-// 
+//
 
 void format_message(int code, utf_string const& file, int line, __VALIST ap)
 {
@@ -143,142 +143,142 @@ void format_message(int code, utf_string const& file, int line, __VALIST ap)
   static char* compound_message;
   const void* parameter[MAX_MSG_PARAMETERS];
   int   n_parameters = 2;
-  
+
   if (code == msg_loop || code == msg_sync_loop) { // extract loop identifier
     parameter[n_parameters++] = va_arg(ap, void*);
   }
-  if (history != NULL) { 
+  if (history != NULL) {
     if (compound_message != NULL
-        && ((loop_id != 0 
+        && ((loop_id != 0
              && ((code != msg_loop && code != msg_sync_loop)
                  || (int)(long)parameter[2] != loop_id))
             || (loop_id == 0 && code != msg_wait_path)))
       {
-        if (!message_node::find(compound_message)) { 
+        if (!message_node::find(compound_message)) {
           message_node *msg = first, *next;
-          do { 
+          do {
             next = msg->next;
             fprintf(stdout, "%s\n", msg->text);
             delete msg;
             n_messages += 1;
           } while ((msg = next) != NULL);
-          fprintf(history, "%s\n", compound_message);  
+          fprintf(history, "%s\n", compound_message);
         }
         delete[] compound_message;
         compound_message = NULL;
       }
   }
-  if ((reported_message_mask & msg_table[code].category) 
+  if ((reported_message_mask & msg_table[code].category)
       && msg_table[code].enabled)
     {
       static int prev_line = 0;
-  
+
       char  msg_buf[MAX_MSG_LENGTH];
       char  his_buf[MAX_MSG_LENGTH];
       char* hp = his_buf;
-  
-      if (line == 0) { 
+
+      if (line == 0) {
         line = ++prev_line; // avoid several messages with 0 line number
-      } else { 
+      } else {
         prev_line = 0;
       }
       parameter[0] = file.as_asciz();
       parameter[1] = (void*)line;
 
-      if (history) { 
+      if (history) {
         hp += sprintf(hp, "%s", msg_table[code].name);
       }
-      
+
       char const* src = msg_table[code].format;
       char* dst = msg_buf;
 
-      if (code == msg_done) { 
+      if (code == msg_done) {
         // do not output location prefix for termination message
         src += strlen(MSG_LOCATION_PREFIX);
         parameter[0] = (void*)n_messages;
       }
-      while (*src != 0) { 
-        if (*src == '%') { 
+      while (*src != 0) {
+        if (*src == '%') {
           int index;
           int pos;
-          int n = sscanf(++src, "%d%n", &index, &pos); 
+          int n = sscanf(++src, "%d%n", &index, &pos);
           assert(n == 1);
           assert(index < MAX_MSG_PARAMETERS);
-          while (index >= n_parameters) { 
+          while (index >= n_parameters) {
             parameter[n_parameters++] = va_arg(ap, void*);
           }
           src += pos;
           char* save_dst = dst;
           switch (*src++) {
           case 's': // zero terminated string
-            dst += sprintf(dst, "%s", (char*)parameter[index]);  
+            dst += sprintf(dst, "%s", (char*)parameter[index]);
             break;
           case 'm': // method descriptor
             dst += ((method_desc*)parameter[index])->
               demangle_method_name(dst);
             break;
           case 'u': // utf8 string
-            dst += sprintf(dst, "%s", 
-                           ((utf_string*)parameter[index])->as_asciz()); 
+            dst += sprintf(dst, "%s",
+                           ((utf_string*)parameter[index])->as_asciz());
             break;
           case 'c': // class descriptor
             dst += sprintf(dst, "%s", ((class_desc*)parameter[index])->
-                           name.as_asciz()); 
+                           name.as_asciz());
             break;
           case 'd': // integer
-            dst += sprintf(dst, "%d", (int)(long)parameter[index]);  
+            dst += sprintf(dst, "%d", (int)(long)parameter[index]);
             break;
           default:
             assert(false/*bad message parameter format*/);
           }
-          if (history) { 
+          if (history) {
             // append parameeter to history buffer
             if ((index >= 2 || msg_table[code].position_dependent)
-                && (code != msg_sync_loop || index > 2) 
+                && (code != msg_sync_loop || index > 2)
                 && (code != msg_loop || index > 3))
               {
                 // Do not inlude loop number in history message
                 hp += sprintf(hp, ":%.*s", (int)(dst - save_dst), save_dst);
               }
           }
-        } else { 
+        } else {
           *dst++ = *src++;
         }
       }
       *dst++ = '.';
       *dst = 0;
-      if (history != NULL) { 
-        if (compound_message != NULL) { 
+      if (history != NULL) {
+        if (compound_message != NULL) {
           char* new_msg = new char[strlen(compound_message)
                                   +strlen(his_buf)+2];
           sprintf(new_msg, "%s;%s", compound_message, his_buf);
           last = last->next = new message_node(msg_buf);
           delete[] compound_message;
           compound_message = new_msg;
-        } else { 
-          if (code == msg_loop || code == msg_sync_loop 
-              || code == msg_wait) 
-            { 
+        } else {
+          if (code == msg_loop || code == msg_sync_loop
+              || code == msg_wait)
+            {
               compound_message = strdup(his_buf);
               first = last = new message_node(msg_buf);
-              if (code != msg_wait) { 
+              if (code != msg_wait) {
                 loop_id = (int)(long)parameter[2];
               }
-            } else if (!message_node::find(his_buf)) { 
+            } else if (!message_node::find(his_buf)) {
               fprintf(stdout, "%s\n", msg_buf);
-              if (code != msg_done) { 
+              if (code != msg_done) {
                 fprintf(history, "%s\n", his_buf);
                 n_messages += 1;
               }
             }
         }
-      } else { 
+      } else {
         fprintf(stdout, "%s\n", msg_buf);
-        if (code != msg_done) { 
+        if (code != msg_done) {
           n_messages += 1;
         }
       }
-    } 
+    }
 }
 
 graph_vertex* graph_vertex::graph;
@@ -294,14 +294,14 @@ int class_desc::n_classes;
 
 void set_class_source_path(class_desc* cls)
 {
-  if (source_file_path_len != 0) { 
+  if (source_file_path_len != 0) {
     const char* class_file_name = cls->source_file.as_asciz();
-    if (!source_path_redefined) { 
+    if (!source_path_redefined) {
       const char* dirend = strrchr(class_file_name, '/');
-      if (dirend != NULL) { 
+      if (dirend != NULL) {
         int dirlen = dirend - class_file_name;
         if (dirlen <= source_file_path_len
-            && memcmp(class_file_name, 
+            && memcmp(class_file_name,
                       source_file_path + source_file_path_len - dirlen,
                       dirlen) == 0)
           {
@@ -310,17 +310,17 @@ void set_class_source_path(class_desc* cls)
       }
     }
     char file_name_buf[MAX_MSG_LENGTH];
-    int len = sprintf(file_name_buf, "%.*s%c%s", 
-                      source_file_path_len, source_file_path, 
+    int len = sprintf(file_name_buf, "%.*s%c%s",
+                      source_file_path_len, source_file_path,
                       FILE_SEP, class_file_name);
     cls->source_file = utf_string(len, (byte*)file_name_buf);
-  } 
+  }
 }
 
 bool parse_class_file(byte* fp)
 {
   int i;
-  unsigned magic = unpack4(fp); 
+  unsigned magic = unpack4(fp);
   fp += 4;
   if (magic != 0xCAFEBABE) return false;
   int minor_version = unpack2(fp);
@@ -333,10 +333,10 @@ bool parse_class_file(byte* fp)
   memset(constant_pool, 0, sizeof(constant*)*constant_pool_count);
 
   int name_index = 0;
-  for (i = 1; i < constant_pool_count; i++) { 
+  for (i = 1; i < constant_pool_count; i++) {
     constant* cp = NULL;
     int n_extra_cells = 0;
-    switch (*fp) { 
+    switch (*fp) {
     case c_utf8:
       cp = new const_utf8(fp);
       if (!strcmp(((const_utf8*)cp)->as_asciz(), "this")) {
@@ -376,7 +376,7 @@ bool parse_class_file(byte* fp)
     fp += cp->length();
     constant_pool[i] = cp;
     i += n_extra_cells;
-  }      
+  }
   int access_flags = unpack2(fp);
   fp += 2;
   int this_class_name = unpack2(fp);
@@ -385,8 +385,8 @@ bool parse_class_file(byte* fp)
   fp += 2;
   int interfaces_count = unpack2(fp);
   fp += 2;
-    
-  class_desc* this_class = 
+
+  class_desc* this_class =
     class_desc::get(*(const_utf8*)constant_pool
                     [((const_class*)constant_pool[this_class_name])->name]);
 
@@ -406,19 +406,19 @@ bool parse_class_file(byte* fp)
 
   this_class->attr = access_flags;
   if (super_class_name == 0) { // Object class
-    assert(interfaces_count == 0); 
+    assert(interfaces_count == 0);
     this_class->n_bases = 0;
-  } else { 
+  } else {
     this_class->n_bases = interfaces_count + 1;
     this_class->bases = new class_desc*[interfaces_count + 1];
     this_class->bases[0] =
       class_desc::get(*(const_utf8*)constant_pool
                       [((const_class*)constant_pool[super_class_name])->name]);
-    
-    for (i = 1; i <= interfaces_count; i++) { 
+
+    for (i = 1; i <= interfaces_count; i++) {
       int interface_name = unpack2(fp);
       fp += 2;
-      this_class->bases[i] = 
+      this_class->bases[i] =
         class_desc::get(*(const_utf8*)constant_pool
                         [((const_class*)constant_pool[interface_name])->name]);
     }
@@ -431,69 +431,69 @@ bool parse_class_file(byte* fp)
     int name_index = unpack2(fp); fp += 2;
     int desc_index = unpack2(fp); fp += 2;
     int attr_count = unpack2(fp); fp += 2;
-    field_desc* field = 
+    field_desc* field =
       this_class->get_field(*(const_utf8*)constant_pool[name_index]);
     field->attr |= access_flags;
-    while (--attr_count >= 0) { 
-      int attr_len = unpack4(fp+2); 
+    while (--attr_count >= 0) {
+      int attr_len = unpack4(fp+2);
       fp += 6 + attr_len;
     }
   }
-   
+
   int methods_count = unpack2(fp);
   fp += 2;
-    
+
   //
-  // We need "SourceFile" attribute first, so remember position and 
+  // We need "SourceFile" attribute first, so remember position and
   // skip methods definitions
   //
   byte* method_part = fp;
-  for (i = 0; i < methods_count; i++) { 
-    int attr_count = unpack2(fp+6); 
+  for (i = 0; i < methods_count; i++) {
+    int attr_count = unpack2(fp+6);
     fp += 8;
-    while (--attr_count >= 0) { 
-      int attr_len = unpack4(fp+2); 
+    while (--attr_count >= 0) {
+      int attr_len = unpack4(fp+2);
       fp += 6 + attr_len;
     }
   }
   int attr_count = unpack2(fp); fp += 2;
-  while (--attr_count >= 0) { 
-    int attr_name = unpack2(fp); fp += 2; 
+  while (--attr_count >= 0) {
+    int attr_name = unpack2(fp); fp += 2;
     int attr_len = unpack4(fp); fp += 4;
     utf_string attr(*(const_utf8*)constant_pool[attr_name]);
-    if (attr == "SourceFile") { 
+    if (attr == "SourceFile") {
       int source_name = unpack2(fp); fp += 2;
       int file_name_idx = this_class->source_file.rindex(FILE_SEP);
       utf_string* file_name = (const_utf8*)constant_pool[source_name];
-      if (file_name_idx >= 0) { 
+      if (file_name_idx >= 0) {
         this_class->source_file.append(file_name_idx+1, *file_name);
-      } else { 
+      } else {
         this_class->source_file = *file_name;
       }
-    } else { 
+    } else {
       fp += attr_len;
     }
   }
   fp = method_part;
 
-  while (--methods_count >= 0) { 
+  while (--methods_count >= 0) {
     int access_flags = unpack2(fp); fp += 2;
     int name_index = unpack2(fp); fp += 2;
     int desc_index = unpack2(fp); fp += 2;
     int attr_count = unpack2(fp); fp += 2;
-  
+
     const_utf8* mth_name = (const_utf8*)constant_pool[name_index];
     const_utf8* mth_desc = (const_utf8*)constant_pool[desc_index];
 
     method_desc* method = this_class->get_method(*mth_name, *mth_desc);
     method->attr |= access_flags;
     method->vars = NULL;
-  
-    while (--attr_count >= 0) { 
+
+    while (--attr_count >= 0) {
       int attr_name = unpack2(fp); fp += 2;
       int attr_len = unpack4(fp); fp += 4;
       utf_string attr(*(const_utf8*)constant_pool[attr_name]);
-      if (attr == "Code") { 
+      if (attr == "Code") {
         int max_stack = unpack2(fp); fp += 2;
         int max_locals = unpack2(fp); fp += 2;
         int code_length = unpack4(fp); fp += 4;
@@ -508,7 +508,7 @@ bool parse_class_file(byte* fp)
         memset(method->line_table, 0, sizeof(word)*code_length);
 
         method->context = new local_context*[code_length+1];
-        memset(method->context, 0, 
+        memset(method->context, 0,
                sizeof(local_context*)*(code_length+1));
 
         int exception_table_length = unpack2(fp); fp += 2;
@@ -518,11 +518,11 @@ bool parse_class_file(byte* fp)
 	** if an exception handler at byte code "pos" handles exception of
 	** more than one byte code range, call
 	** "new ctx_entry_point(&method->context[pos]);" only once! Because
-	** otherwise the stack gets out of control. 
+	** otherwise the stack gets out of control.
 	**
 	** in the following example there are two different handle adresses
-	** 16 and 25. and for each of them 
-	** "new ctx_entry_point(&method->context[handler_pc]);" is called 
+	** 16 and 25. and for each of them
+	** "new ctx_entry_point(&method->context[handler_pc]);" is called
 	** exactly once. Therefore the program calls :
 	** new ctx_entry_point(&method->context[16]);
 	** new ctx_entry_point(&method->context[25]);
@@ -537,17 +537,17 @@ bool parse_class_file(byte* fp)
 	** 20           23           25                                     **
 	**********************************************************************
 	**
-	** it is expected that the byte code adresses of the handles are 
+	** it is expected that the byte code adresses of the handles are
 	** ordered. If this would not be the case, a simple comparison of
 	** handler_pc and old_handler_pc would not be sufficient!
 	*/
 
 	int old_handler_pc = -1;
 
-        while (--exception_table_length >= 0) { 
+        while (--exception_table_length >= 0) {
           int handler_pc = unpack2(fp+4);
 	  if ( handler_pc != old_handler_pc) {
-	    new ctx_entry_point(&method->context[handler_pc]); 
+	    new ctx_entry_point(&method->context[handler_pc]);
 	  }
 	  fp += 8;
 	  old_handler_pc = handler_pc;
@@ -556,14 +556,14 @@ bool parse_class_file(byte* fp)
         int method_attr_count = unpack2(fp); fp += 2;
         bool line_table_present = false;
         bool local_var_table_present = false;
-        while (--method_attr_count >= 0) { 
+        while (--method_attr_count >= 0) {
           int mth_attr_name = unpack2(fp); fp += 2;
           int mth_attr_len = unpack4(fp); fp += 4;
-          utf_string* attr = 
+          utf_string* attr =
             (const_utf8*)constant_pool[mth_attr_name];
           if (*attr == "LineNumberTable") {
             int table_length = unpack2(fp); fp += 2;
-            while (--table_length >= 0) { 
+            while (--table_length >= 0) {
               int start_pc = unpack2(fp); fp += 2;
               int line_no = unpack2(fp); fp += 2;
               method->line_table[start_pc] = line_no;
@@ -571,20 +571,20 @@ bool parse_class_file(byte* fp)
             method->first_line = method->line_table[0];
             if (method->first_line != 0) method->first_line -= 1;
             line_table_present = true;
-          } else if (*attr == "LocalVariableTable") { 
+          } else if (*attr == "LocalVariableTable") {
             method->local_variable_table_present = true;
             int table_length = unpack2(fp); fp += 2;
-            while (--table_length >= 0) { 
+            while (--table_length >= 0) {
               int start_pc = unpack2(fp); fp += 2;
               int length = unpack2(fp); fp += 2;
               int name  = unpack2(fp); fp += 2;
               int desc  = unpack2(fp); fp += 2;
               int index = unpack2(fp); fp += 2;
-              int type = (index == 0 && 
+              int type = (index == 0 &&
                           !(access_flags & method_desc::m_static))
-                ? tp_self 
+                ? tp_self
                 : get_type(*(const_utf8*)constant_pool[desc]);
-              new ctx_push_var(&method->context[start_pc], 
+              new ctx_push_var(&method->context[start_pc],
                                (const_utf8*)constant_pool[name],
                                type, index, start_pc);
               new ctx_pop_var(&method->context[start_pc+length],
@@ -595,20 +595,20 @@ bool parse_class_file(byte* fp)
             fp += mth_attr_len;
           }
         }
-        if (verbose && !(access_flags & method_desc::m_native)) { 
+        if (verbose && !(access_flags & method_desc::m_native)) {
           char buf[MAX_MSG_LENGTH];
           method->demangle_method_name(buf);
-          if (!line_table_present) { 
+          if (!line_table_present) {
             fprintf(stderr, "No line table present "
                     "for method %s\n", buf);
           }
-          if (!local_var_table_present) { 
+          if (!local_var_table_present) {
             fprintf(stderr, "No local variable table present "
                     "for method %s\n", buf);
           }
         }
         method->parse_code(constant_pool, is_this);
-      } else { 
+      } else {
         fp += attr_len;
       }
     }
@@ -618,7 +618,7 @@ bool parse_class_file(byte* fp)
     if (constant_pool[i] != NULL)
       delete constant_pool[i];
   }
-  
+
   /*
   for (method_desc* m = this_class->methods; m != NULL; m = m->next) {
     m->locksAtEntry.clear();
@@ -631,16 +631,16 @@ bool parse_class_file(byte* fp)
 
   monitor_stack::const_iterator it;
   for (it = this_class->usedLocks.begin();
-       it != this_class->usedLocks.end(); it++) {
+       it != this_class->usedLocks.end(); ++it) {
     if (!((*it)->writes.empty())) {
       vector<int>::const_iterator i;
-      for (i = (*it)->writes.begin(); i != (*it)->writes.end(); i++) {
+      for (i = (*it)->writes.begin(); i != (*it)->writes.end(); ++i) {
         message_at(msg_lock_assign, this_class->source_file, *i, *it);
         // *i: line number; *it = field_desc*
       }
     }
   }
-  
+
   return true;
 }
 
@@ -648,9 +648,9 @@ bool parse_class_file(byte* fp)
 // Determine type of file and extract Java class description from the file
 //
 
-inline int stricmp(const char* p, const char* q) 
+inline int stricmp(const char* p, const char* q)
 {
-  do { 
+  do {
     while (*p == '_') p += 1; // ignore '_'
     while (*q == '_') q += 1; // ignore '_'
     int diff = toupper(*(byte*)p) - toupper(*(byte*)q);
@@ -668,67 +668,67 @@ void proceed_file(char* file_name, bool recursive = false)
   HANDLE dir;
   char dir_path[MAX_PATH];
   WIN32_FIND_DATA file_data;
-  if (recursive != 0) { 
+  if (recursive != 0) {
     sprintf(dir_path, "%s\\*", file_name);
-    if ((dir=FindFirstFile(dir_path, &file_data)) != INVALID_HANDLE_VALUE) 
-      { 
-        file_name = dir_path; 
+    if ((dir=FindFirstFile(dir_path, &file_data)) != INVALID_HANDLE_VALUE)
+      {
+        file_name = dir_path;
       }
-  } else { 
-    if (strcmp(file_name, "..") == 0 || strcmp(file_name, ".") == 0) { 
+  } else {
+    if (strcmp(file_name, "..") == 0 || strcmp(file_name, ".") == 0) {
       proceed_file(file_name, 1);
       return;
     }
     if ((dir=FindFirstFile(file_name, &file_data)) == INVALID_HANDLE_VALUE)
-      { 
+      {
         fprintf(stderr, "Failed to open file '%s'\n", file_name);
         return;
       }
   }
   if (dir != INVALID_HANDLE_VALUE) {
     do {
-      if (!recursive || *file_data.cFileName != '.') { 
+      if (!recursive || *file_data.cFileName != '.') {
         char file_path[MAX_PATH];
         char* file_dir = strrchr(file_name, '\\');
         char* file_name_with_path;
-        if (file_dir != NULL) { 
+        if (file_dir != NULL) {
           int dir_len = file_dir - file_name + 1;
           memcpy(file_path, file_name, dir_len);
           strcpy(file_path+dir_len, file_data.cFileName);
           file_name_with_path = file_path;
-        } else { 
+        } else {
           file_name_with_path = file_data.cFileName;
         }
         proceed_file(file_name_with_path, recursive+1);
-      } 
+      }
     } while (FindNextFile(dir, &file_data));
     FindClose(dir);
     return;
   }
 #else
   DIR* dir = opendir(file_name);
-  if (dir != NULL) { 
+  if (dir != NULL) {
     struct dirent* entry;
-    while ((entry = readdir(dir)) != NULL) { 
-      if (*entry->d_name != '.') { 
+    while ((entry = readdir(dir)) != NULL) {
+      if (*entry->d_name != '.') {
         char full_name[MAX_PATH];
         sprintf(full_name, "%s/%s", file_name, entry->d_name);
         proceed_file(full_name, 2);
       }
-    } 
+    }
     closedir(dir);
     return;
   }
 #endif
-  if (recursive >= 2) { 
-    int len = strlen(file_name); 
+  if (recursive >= 2) {
+    int len = strlen(file_name);
     if (len < 6 || stricmp(file_name + len - 6, ".class") != 0) {
       return;
     }
   }
-  	
+
   FILE* f = fopen(file_name, "rb");
-  if (f == NULL) { 
+  if (f == NULL) {
     fprintf(stderr, "Failed to open file '%s'\n", file_name);
     return;
   }
@@ -737,10 +737,10 @@ void proceed_file(char* file_name, bool recursive = false)
     // extract files from ZIP archive
     byte hdr[ECREC_SIZE+4];
     if (fseek(f, 0, SEEK_END) != 0
-        || ftell(f) < ECREC_SIZE+4 
+        || ftell(f) < ECREC_SIZE+4
         || fseek(f, -(ECREC_SIZE+4), SEEK_CUR) != 0
-        || fread(hdr, ECREC_SIZE+4, 1, f) != 1) 
-      { 
+        || fread(hdr, ECREC_SIZE+4, 1, f) != 1)
+      {
         fprintf(stderr, "Bad format of ZIP file '%s'\n", file_name);
 		fclose(f);
         return;
@@ -765,13 +765,13 @@ void proceed_file(char* file_name, bool recursive = false)
       int filename_length = unpack2_le(&dp[4+C_FILENAME_LENGTH]);
       int cextra_length = unpack2_le(&dp[4+C_EXTRA_FIELD_LENGTH]);
 
-      if ((dp-directory)+filename_length+CREC_SIZE+4 > dir_size) { 
+      if ((dp-directory)+filename_length+CREC_SIZE+4 > dir_size) {
         fprintf(stderr, "Bad format of ZIP file '%s'\n", file_name);
         break;
       }
-  	
+
       byte local_rec_buffer[LREC_SIZE+4];
-      int local_header_offset = 
+      int local_header_offset =
         unpack4_le(&dp[4+C_RELATIVE_OFFSET_LOCAL_HEADER]);
 
       if (fseek(f, local_header_offset, SEEK_SET) != 0
@@ -781,7 +781,7 @@ void proceed_file(char* file_name, bool recursive = false)
           fprintf(stderr, "Bad format of ZIP file '%s'\n", file_name);
           break;
         }
-  	
+
       int file_start = local_header_offset + (LREC_SIZE+4) +
         unpack2_le(&local_rec_buffer[4+L_FILENAME_LENGTH]) +
         unpack2_le(&local_rec_buffer[4+L_EXTRA_FIELD_LENGTH]);
@@ -790,22 +790,22 @@ void proceed_file(char* file_name, bool recursive = false)
 
       if (compression_method == C_UNCOMPRESSED)
 	{
-          if (uncompressed_size != 0) { 
+          if (uncompressed_size != 0) {
             byte* buffer = new byte[uncompressed_size];
-            if (fseek(f, file_start, SEEK_SET) != 0 
-                || fread(buffer, uncompressed_size, 1, f) != 1) 
-              { 
-                fprintf(stderr, "Failed to read ZIP file '%s'\n", 
+            if (fseek(f, file_start, SEEK_SET) != 0
+                || fread(buffer, uncompressed_size, 1, f) != 1)
+              {
+                fprintf(stderr, "Failed to read ZIP file '%s'\n",
                         file_name);
 				delete[] buffer;
 				fclose(f);
                 return;
-              } else { 
-                if (verbose) { 
-                  fprintf(stderr, "Verify file '%.*s'\n", 
-                          filename_length, dp + filename_offset); 
+              } else {
+                if (verbose) {
+                  fprintf(stderr, "Verify file '%.*s'\n",
+                          filename_length, dp + filename_offset);
                 }
-                if (!parse_class_file(buffer)) { 
+                if (!parse_class_file(buffer)) {
                   fprintf(stderr, "File '%.*s' isn't correct Java class "
                           "file\n", filename_length, dp+filename_offset);
                 }
@@ -815,19 +815,19 @@ void proceed_file(char* file_name, bool recursive = false)
       }
       else if (compression_method == C_DEFLATE) {
 
-          if ((uncompressed_size != 0) && (compressed_size != 0)) { 
+          if ((uncompressed_size != 0) && (compressed_size != 0)) {
             byte* uncbuffer = new byte[uncompressed_size];
             byte* cbuffer = new byte[compressed_size];
-            if (fseek(f, file_start, SEEK_SET) != 0 
-                || fread(cbuffer, compressed_size, 1, f) != 1) 
-              { 
-                fprintf(stderr, "Failed to read ZIP file '%s'\n", 
+            if (fseek(f, file_start, SEEK_SET) != 0
+                || fread(cbuffer, compressed_size, 1, f) != 1)
+              {
+                fprintf(stderr, "Failed to read ZIP file '%s'\n",
                         file_name);
 				fclose(f);
 				delete[] uncbuffer;
 				delete[] cbuffer;
                 return;
-              } else { 
+              } else {
                 z_stream c_stream;
 
                 c_stream.zalloc = (alloc_func) 0;
@@ -859,11 +859,11 @@ void proceed_file(char* file_name, bool recursive = false)
                     {
                         inflateEnd(&c_stream);
 
-                        if (verbose) { 
-                            fprintf(stderr, "Verify file '%.*s'\n", 
-                            filename_length, dp + filename_offset); 
+                        if (verbose) {
+                            fprintf(stderr, "Verify file '%.*s'\n",
+                            filename_length, dp + filename_offset);
                         }
-                        if (!parse_class_file(uncbuffer)) { 
+                        if (!parse_class_file(uncbuffer)) {
                             fprintf(stderr, "File '%.*s' isn't correct Java class "
                                 "file\n", filename_length, dp+filename_offset);
                         }
@@ -874,22 +874,22 @@ void proceed_file(char* file_name, bool recursive = false)
             delete[] uncbuffer;
           }
       }
-      dp += filename_offset + filename_length + cextra_length; 
+      dp += filename_offset + filename_length + cextra_length;
     }
     delete[] directory;
-  } else { 
+  } else {
     fseek(f, 0, SEEK_END);
     size_t file_size = ftell(f);
     fseek(f, 0, SEEK_SET);
     byte* buffer = new byte[file_size];
-    if (fread(buffer, file_size, 1, f) != 1) { 
+    if (fread(buffer, file_size, 1, f) != 1) {
       fprintf(stderr, "Failed to read file '%s'\n", file_name);
-    } else { 
-      if (verbose) { 
-        fprintf(stderr, "Verify file '%s'\n", file_name); 
+    } else {
+      if (verbose) {
+        fprintf(stderr, "Verify file '%s'\n", file_name);
       }
-      if (!parse_class_file(buffer)) { 
-        fprintf(stderr, "File '%s' isn't correct Java class file\n", 
+      if (!parse_class_file(buffer)) {
+        fprintf(stderr, "File '%s' isn't correct Java class file\n",
                 file_name);
       }
     }
@@ -897,23 +897,23 @@ void proceed_file(char* file_name, bool recursive = false)
   }
   fclose(f);
 }
-    
+
 //
-// Main function: parse command line 
+// Main function: parse command line
 //
 
 msg_select_category_option msg_category_option[] = {
   {cat_synchronization, "synchronization",
      "detect synchronizational problems"},
-  {cat_deadlock, "deadlock", 
+  {cat_deadlock, "deadlock",
      "possible deadlock detection"},
-  {cat_race_condition, "race_condition", 
+  {cat_race_condition, "race_condition",
      "possible race condition detection"},
-  {cat_wait_nosync, "wait_nosync", 
+  {cat_wait_nosync, "wait_nosync",
      "wait or notify is called from non-synchronized method"},
   {cat_inheritance, "inheritance",
      "detect problems with class/interface inheritance"},
-  {cat_super_finalize, "super_finalize", 
+  {cat_super_finalize, "super_finalize",
      "super.finalize() is not called from finalize method"},
   {cat_not_overridden, "not_overridden",
      "methods with the same names and different profiles"},
@@ -931,15 +931,15 @@ msg_select_category_option msg_category_option[] = {
      "result of operation is always zero"},
   {cat_redundant, "redundant",
      "operation always produces the same result"},
-  {cat_overflow, "overflow", 
+  {cat_overflow, "overflow",
      "detect incorrect handling of operation overflow"},
   {cat_incomp_case, "incomp_case",
      "switch case label can't be produced by switch expression"},
   {cat_short_char_cmp, "short_char_cmp",
      "expression of char type is compared with one of short type"},
-  {cat_string_cmp, "string_cmp", 
+  {cat_string_cmp, "string_cmp",
      "two strings are compared as object references"},
-  {cat_weak_cmp, "weak_cmp", 
+  {cat_weak_cmp, "weak_cmp",
      "using of inequality comparison where equality can be checked"},
   {cat_domain, "domain",
      "operands doesn't belong to the domain of operator"},
@@ -947,7 +947,7 @@ msg_select_category_option msg_category_option[] = {
      "data can be lost as a result of type conversion"},
   {cat_bounds, "bounds",
      "array index or length is out of range"},
-  {cat_done, "done", 
+  {cat_done, "done",
      "notification about verification completion"},
   {cat_all, "all",
      "produce messages of all categories"}
@@ -967,22 +967,22 @@ Options:\n\
   (+|-)message_code : enable/disable concrete message\n\
 Message categories:\n");
   message_category group = msg_category_option[0].msg_cat;
-  for (unsigned i = 0; i < items(msg_category_option); i++) { 
+  for (unsigned i = 0; i < items(msg_category_option); i++) {
     message_category msg_cat = msg_category_option[i].msg_cat;
-    if ((msg_cat & ~group) != 0) { 
+    if ((msg_cat & ~group) != 0) {
       group = msg_cat;
       fprintf(stderr, "\n");
     }
-    fprintf(stderr, "  %s : %s\n", 
-            msg_category_option[i].cat_name, 
+    fprintf(stderr, "  %s : %s\n",
+            msg_category_option[i].cat_name,
             msg_category_option[i].cat_desc);
   }
-  if (verbose) { 
+  if (verbose) {
     fprintf(stderr, "\nMessages: (category:code: \"text\")\n");
-    for (int i = 0; i < msg_last; i++) { 
-      for (unsigned j = 0; j < items(msg_category_option); j++) { 
+    for (int i = 0; i < msg_last; i++) {
+      for (unsigned j = 0; j < items(msg_category_option); j++) {
         if (msg_table[i].category == msg_category_option[j].msg_cat) {
-          fprintf(stderr, "  %s:%s: \"%s\"\n", 
+          fprintf(stderr, "  %s:%s: \"%s\"\n",
                   msg_category_option[j].cat_name,
                   msg_table[i].name, msg_table[i].format);
           break;
@@ -994,19 +994,19 @@ Message categories:\n");
 
 int main(int argc, char* argv[])
 {
-  int i, j;   
+  int i, j;
 
-  if (argc == 1) { 
+  if (argc == 1) {
     usage();
     return EXIT_FAILURE;
   }
 
-  for (i = 1; i < argc; i++) { 
-    if (*argv[i] == '-' || *argv[i] == '+') { 
+  for (i = 1; i < argc; i++) {
+    if (*argv[i] == '-' || *argv[i] == '+') {
       bool enabled = *argv[i] == '+';
       char* option = &argv[i][1];
       int n_cat = items(msg_category_option);
-      msg_select_category_option* msg = msg_category_option;  
+      msg_select_category_option* msg = msg_category_option;
 
       if (stricmp(option, "source") == 0 && i+1 < argc) {
         source_file_path = argv[++i];
@@ -1016,76 +1016,76 @@ int main(int argc, char* argv[])
         }
         source_path_redefined = true;
         continue;
-      } 
+      }
       if (stricmp(option, "history") == 0 && i+1 < argc) {
         history = fopen(argv[++i], "a+");
-        if (history != NULL) { 
+        if (history != NULL) {
           char his_buf[MAX_MSG_LENGTH];
           fseek(history, 0, SEEK_SET);
-          while (fgets(his_buf, sizeof his_buf, history)) { 
-            int len = strlen(his_buf); 
-            if (len > 0) { 
+          while (fgets(his_buf, sizeof his_buf, history)) {
+            int len = strlen(his_buf);
+            if (len > 0) {
               his_buf[len-1] = '\0';
               message_node::add_to_hash(his_buf);
             }
           }
           fseek(history, 0, SEEK_END);
-        } else { 
+        } else {
           fprintf(stderr, "Failed to open history file '%s'\n",
                   argv[i]);
         }
         continue;
       }
       if (stricmp(option, "max_shown_paths") == 0 && i+1 < argc) {
-        if (sscanf(argv[++i], "%d", &max_shown_paths) != 1) { 
+        if (sscanf(argv[++i], "%d", &max_shown_paths) != 1) {
           fprintf(stderr, "Bad parameter value for -max_shown_paths "
                   "option: '%s'\n", argv[i]);
         }
         continue;
-      } 
-      if (stricmp(option, "verbose") == 0) { 
+      }
+      if (stricmp(option, "verbose") == 0) {
         verbose = enabled;
-        if (verbose) { 
-          fprintf(stderr, 
+        if (verbose) {
+          fprintf(stderr,
                   "Jlint - program correctness verifier for Java, "
                   "version %s ("__DATE__").\n", VERSION);
         }
         continue;
       }
-      if (stricmp(option, "help") == 0) { 
+      if (stricmp(option, "help") == 0) {
         usage();
         return EXIT_SUCCESS;
       }
-      for (j = 0; j < n_cat; j++) { 
-        if (stricmp(msg[j].cat_name, option) == 0) { 
-          if (enabled) { 
+      for (j = 0; j < n_cat; j++) {
+        if (stricmp(msg[j].cat_name, option) == 0) {
+          if (enabled) {
             reported_message_mask |= msg[j].msg_cat;
-          } else { 
+          } else {
             reported_message_mask &= ~msg[j].msg_cat;
           }
           break;
         }
       }
-      if (j == n_cat) { 
-        for (j = 0; j < msg_last; j++) { 
-          if (stricmp(msg_table[j].name, option) == 0) { 
+      if (j == n_cat) {
+        for (j = 0; j < msg_last; j++) {
+          if (stricmp(msg_table[j].name, option) == 0) {
             msg_table[j].enabled = enabled;
             break;
           }
         }
-        if (j == msg_last) { 
+        if (j == msg_last) {
           fprintf(stderr, "Unrecognized option %s\n", argv[i]);
           usage();
         }
         return EXIT_FAILURE;
-      }		 
-    } else { 
+      }
+    } else {
       char* file_name = argv[i];
-      if (!source_path_redefined) { 
+      if (!source_path_redefined) {
         source_file_path = file_name;
         char* dirend = strrchr(source_file_path, FILE_SEP);
         source_file_path_len = (dirend != NULL)
-          ? dirend - source_file_path : 0; 
+          ? dirend - source_file_path : 0;
       }
       proceed_file(file_name);
     }
@@ -1093,5 +1093,5 @@ int main(int argc, char* argv[])
   class_desc::global_analysis();
   message_at(msg_done, utf_string(""), 0, (void*)n_messages);
   return EXIT_SUCCESS;
-}  
+}
 
