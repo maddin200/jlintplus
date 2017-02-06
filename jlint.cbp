@@ -24,7 +24,7 @@
 					<Add option="/DNDEBUG" />
 					<Add option="/D_CONSOLE" />
 					<Add option="/D_DEBUG" />
-					<Add directory="../../../imageplus/zlib" />
+					<Add directory="../zlib" />
 				</Compiler>
 				<Linker>
 					<Add library="kernel32" />
@@ -52,7 +52,7 @@
 					<Add option="-g" />
 					<Add option="-W" />
 					<Add option="-fexceptions" />
-					<Add directory="../../../imageplus/zlib" />
+					<Add directory="../zlib" />
 				</Compiler>
 				<Linker>
 					<Add library="kernel32" />
@@ -67,7 +67,7 @@
 					<Add library="uuid" />
 					<Add library="odbc32" />
 					<Add library="odbccp32" />
-					<Add library="../../../imageplus/libimageplus.a" />
+					<Add library="../zlib/bin/Debug/libzlib.a" />
 				</Linker>
 			</Target>
 			<Target title="Release Mac">
@@ -84,7 +84,7 @@
 					<Add option="-D_CONSOLE" />
 					<Add option="-D_MBCS" />
 					<Add option="-D_DEBUG" />
-					<Add directory="../../../imageplus/zlib" />
+					<Add directory="../zlib" />
 				</Compiler>
 				<Linker>
 					<Add library="kernel32" />
@@ -99,7 +99,7 @@
 					<Add library="uuid" />
 					<Add library="odbc32" />
 					<Add library="odbccp32" />
-					<Add library="../../../imageplus/libimageplusmac.a" />
+					<Add library="../zlib/bin/Release Mac/libzlib.a" />
 				</Linker>
 			</Target>
 			<Target title="ReleaseMinGW">
