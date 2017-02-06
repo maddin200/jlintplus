@@ -2,6 +2,7 @@
 <CodeBlocks_workspace_file>
 	<Workspace title="Workspace">
 		<Project filename="jlintwin32/antic/antic.cbp" />
+		<Project filename="jlintwin32/zlib/zlib.cbp" />
 		<Project filename="jlintwin32/jlint/jlint.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
