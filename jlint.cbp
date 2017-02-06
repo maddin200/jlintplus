@@ -10,19 +10,48 @@
 				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/Release/jlint" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Release" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="msvc10" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-Wextra" />
-					<Add option="-Wall" />
-					<Add option="-W" />
-					<Add option="-fexceptions" />
 					<Add option="-DWIN32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-D_CONSOLE" />
 					<Add option="-D_MBCS" />
 					<Add option="-D_DEBUG" />
+					<Add option="-DMY_MSVC" />
 					<Add option="-DVISUAL_CPP" />
+					<Add option="/DWIN32" />
+					<Add option="/DNDEBUG" />
+					<Add option="/D_CONSOLE" />
+					<Add option="/D_DEBUG" />
+					<Add directory="../../../imageplus/zlib" />
+				</Compiler>
+				<Linker>
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
+					<Add library="../../../imageplus/libimageplus.lib" />
+				</Linker>
+			</Target>
+			<Target title="Win32 Debug">
+				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/Debug/jlint" prefix_auto="1" extension_auto="1" />
+				<Option object_output="Debug" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-W" />
+					<Add option="-fexceptions" />
 					<Add directory="../../../imageplus/zlib" />
 				</Compiler>
 				<Linker>
@@ -41,38 +70,6 @@
 					<Add library="../../../imageplus/libimageplus.a" />
 				</Linker>
 			</Target>
-			<Target title="Win32 Debug">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/Debug/jlint" prefix_auto="1" extension_auto="1" />
-				<Option object_output="Debug" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-g" />
-					<Add option="-W" />
-					<Add option="-fexceptions" />
-					<Add option="-DWIN32" />
-					<Add option="-D_DEBUG" />
-					<Add option="-D_CONSOLE" />
-					<Add option="-D_MBCS" />
-					<Add option="-DVISUAL_CPP" />
-					<Add directory="../../../imageplus/zlib" />
-				</Compiler>
-				<Linker>
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="winspool" />
-					<Add library="comdlg32" />
-					<Add library="advapi32" />
-					<Add library="shell32" />
-					<Add library="ole32" />
-					<Add library="oleaut32" />
-					<Add library="uuid" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
-					<Add library="../../../imageplus/libimageplusd.a" />
-				</Linker>
-			</Target>
 			<Target title="Release Mac">
 				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/Release Mac/jlint" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Release Mac" />
@@ -87,7 +84,6 @@
 					<Add option="-D_CONSOLE" />
 					<Add option="-D_MBCS" />
 					<Add option="-D_DEBUG" />
-					<Add option="-DVISUAL_CPP" />
 					<Add directory="../../../imageplus/zlib" />
 				</Compiler>
 				<Linker>
@@ -104,6 +100,41 @@
 					<Add library="odbc32" />
 					<Add library="odbccp32" />
 					<Add library="../../../imageplus/libimageplusmac.a" />
+				</Linker>
+			</Target>
+			<Target title="ReleaseMinGW">
+				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/ReleaseMinGW/jlint" prefix_auto="1" extension_auto="1" />
+				<Option object_output="ReleaseMinGW" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters="test.java" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
+					<Add option="-W" />
+					<Add option="-fexceptions" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add option="-D_MBCS" />
+					<Add option="-D_DEBUG" />
+					<Add directory="../../../imageplus/zlib" />
+				</Compiler>
+				<Linker>
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
+					<Add library="../../../imageplus/libimageplus.a" />
 				</Linker>
 			</Target>
 		</Build>
