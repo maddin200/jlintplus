@@ -119,7 +119,7 @@
 					<Add option="-D_CONSOLE" />
 					<Add option="-D_MBCS" />
 					<Add option="-D_DEBUG" />
-					<Add directory="../../../imageplus/zlib" />
+					<Add directory="../zlib" />
 				</Compiler>
 				<Linker>
 					<Add library="kernel32" />
@@ -134,7 +134,7 @@
 					<Add library="uuid" />
 					<Add library="odbc32" />
 					<Add library="odbccp32" />
-					<Add library="../../../imageplus/libimageplus.a" />
+					<Add library="../zlib/bin/Release/libzlib.a" />
 				</Linker>
 			</Target>
 		</Build>
