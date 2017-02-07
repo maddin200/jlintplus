@@ -83,7 +83,6 @@
 					<Add option="-DNDEBUG" />
 					<Add option="-D_CONSOLE" />
 					<Add option="-D_MBCS" />
-					<Add option="-D_DEBUG" />
 					<Add directory="../zlib" />
 				</Compiler>
 				<Linker>
@@ -109,6 +108,11 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-Wshadow" />
+					<Add option="-Wunreachable-code" />
+					<Add option="-Wmissing-declarations" />
+					<Add option="-Wmissing-include-dirs" />
+					<Add option="-Wswitch-default" />
 					<Add option="-Wextra" />
 					<Add option="-Wall" />
 					<Add option="-W" />
@@ -117,7 +121,6 @@
 					<Add option="-DNDEBUG" />
 					<Add option="-D_CONSOLE" />
 					<Add option="-D_MBCS" />
-					<Add option="-D_DEBUG" />
 					<Add directory="../zlib" />
 				</Compiler>
 				<Linker>
@@ -146,6 +149,9 @@
 					<Add option="-g" />
 					<Add option="-W" />
 					<Add option="-fexceptions" />
+					<Add option="-DWIN32" />
+					<Add option="-D_CONSOLE" />
+					<Add option="-D_MBCS" />
 					<Add directory="../zlib" />
 				</Compiler>
 				<Linker>
