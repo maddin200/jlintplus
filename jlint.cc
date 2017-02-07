@@ -43,6 +43,7 @@ FILE* history;
 string_pool stringPool;
 field_desc* is_const;
 
+
 message_descriptor msg_table[] =
   {
 #define MSG(category, code, position_dependent, format) \
@@ -50,6 +51,12 @@ message_descriptor msg_table[] =
 #include "jlint.msg"
     {cat_all}
   };
+
+
+void set_class_source_path(class_desc* cls);
+void usage();
+bool parse_class_file(byte* fp);
+void proceed_file(char* file_name, bool recursive);
 
 unsigned int string_hash_function(byte* p) {
   unsigned int h = 0, g;
@@ -332,7 +339,7 @@ bool parse_class_file(byte* fp)
   constant** constant_pool = new constant*[constant_pool_count];
   memset(constant_pool, 0, sizeof(constant*)*constant_pool_count);
 
-  int name_index = 0;
+  int name_index1 = 0;
   for (i = 1; i < constant_pool_count; i++) {
     constant* cp = NULL;
     int n_extra_cells = 0;
@@ -340,7 +347,7 @@ bool parse_class_file(byte* fp)
     case c_utf8:
       cp = new const_utf8(fp);
       if (!strcmp(((const_utf8*)cp)->as_asciz(), "this")) {
-        name_index = i;
+        name_index1 = i;
       }
       break;
     case c_integer:
@@ -377,7 +384,7 @@ bool parse_class_file(byte* fp)
     constant_pool[i] = cp;
     i += n_extra_cells;
   }
-  int access_flags = unpack2(fp);
+  int access_flags1 = unpack2(fp);
   fp += 2;
   int this_class_name = unpack2(fp);
   fp += 2;
@@ -396,7 +403,7 @@ bool parse_class_file(byte* fp)
   field_desc* is_this = new field_desc(utf_string("<this>"), this_class, NULL);
   // assign name_and_type for is_this - find name entry "this" and obj. type
   is_this->name_and_type =
-    new const_name_and_type(name_index,
+    new const_name_and_type(name_index1,
                             ((const_class*)constant_pool[this_class_name])->name);
   is_this->equals = is_this;
   is_this->cls = this_class;
@@ -404,7 +411,7 @@ bool parse_class_file(byte* fp)
   // init. is_const
   field_desc* is_const = new field_desc(utf_string("<const>"), NULL, NULL);
 
-  this_class->attr = access_flags;
+  this_class->attr = access_flags1;
   if (super_class_name == 0) { // Object class
     assert(interfaces_count == 0);
     this_class->n_bases = 0;
@@ -427,13 +434,13 @@ bool parse_class_file(byte* fp)
   fp += 2;
 
   while (--fields_count >= 0) {
-    int access_flags = unpack2(fp); fp += 2;
-    int name_index = unpack2(fp); fp += 2;
+    int myaccess_flags = unpack2(fp); fp += 2;
+    int myname_index = unpack2(fp); fp += 2;
     int desc_index = unpack2(fp); fp += 2;
     int attr_count = unpack2(fp); fp += 2;
     field_desc* field =
-      this_class->get_field(*(const_utf8*)constant_pool[name_index]);
-    field->attr |= access_flags;
+      this_class->get_field(*(const_utf8*)constant_pool[myname_index]);
+    field->attr |= myaccess_flags;
     while (--attr_count >= 0) {
       int attr_len = unpack4(fp+2);
       fp += 6 + attr_len;
@@ -456,8 +463,8 @@ bool parse_class_file(byte* fp)
       fp += 6 + attr_len;
     }
   }
-  int attr_count = unpack2(fp); fp += 2;
-  while (--attr_count >= 0) {
+  int attr_count1 = unpack2(fp); fp += 2;
+  while (--attr_count1 >= 0) {
     int attr_name = unpack2(fp); fp += 2;
     int attr_len = unpack4(fp); fp += 4;
     utf_string attr(*(const_utf8*)constant_pool[attr_name]);
@@ -492,8 +499,8 @@ bool parse_class_file(byte* fp)
     while (--attr_count >= 0) {
       int attr_name = unpack2(fp); fp += 2;
       int attr_len = unpack4(fp); fp += 4;
-      utf_string attr(*(const_utf8*)constant_pool[attr_name]);
-      if (attr == "Code") {
+      utf_string attr1(*(const_utf8*)constant_pool[attr_name]);
+      if (attr1 == "Code") {
         int max_stack = unpack2(fp); fp += 2;
         int max_locals = unpack2(fp); fp += 2;
         int code_length = unpack4(fp); fp += 4;
@@ -520,7 +527,7 @@ bool parse_class_file(byte* fp)
 	** "new ctx_entry_point(&method->context[pos]);" only once! Because
 	** otherwise the stack gets out of control.
 	**
-	** in the following example there are two different handle adresses
+	** in the following example there are two different handle addresses
 	** 16 and 25. and for each of them
 	** "new ctx_entry_point(&method->context[handler_pc]);" is called
 	** exactly once. Therefore the program calls :
@@ -537,7 +544,7 @@ bool parse_class_file(byte* fp)
 	** 20           23           25                                     **
 	**********************************************************************
 	**
-	** it is expected that the byte code adresses of the handles are
+	** it is expected that the byte code addresses of the handles are
 	** ordered. If this would not be the case, a simple comparison of
 	** handler_pc and old_handler_pc would not be sufficient!
 	*/
@@ -633,9 +640,9 @@ bool parse_class_file(byte* fp)
   for (it = this_class->usedLocks.begin();
        it != this_class->usedLocks.end(); ++it) {
     if (!((*it)->writes.empty())) {
-      vector<int>::const_iterator i;
-      for (i = (*it)->writes.begin(); i != (*it)->writes.end(); ++i) {
-        message_at(msg_lock_assign, this_class->source_file, *i, *it);
+      vector<int>::const_iterator ii;
+      for (ii = (*it)->writes.begin(); ii != (*it)->writes.end(); ++ii) {
+        message_at(msg_lock_assign, this_class->source_file, *ii, *it);
         // *i: line number; *it = field_desc*
       }
     }
@@ -720,6 +727,7 @@ void proceed_file(char* file_name, bool recursive = false)
     return;
   }
 #endif
+  // TODO: recursive vs bool comparison (true or false)
   if (recursive >= 2) {
     int len = strlen(file_name);
     if (len < 6 || stricmp(file_name + len - 6, ".class") != 0) {

@@ -28,7 +28,7 @@ public:
   method_desc*   next;
 
   int attr;
-  enum { 
+  enum {
     m_static       = 0x0008,
     m_final        = 0x0010,
     m_synchronized = 0x0020,
@@ -36,7 +36,7 @@ public:
     m_abstract     = 0x0400,
 
     m_wait         = 0x010000, // invoke wait()
-    m_serialized   = 0x020000, // method is called only from methods 
+    m_serialized   = 0x020000, // method is called only from methods
     // of related classes
     m_concurrent   = 0x040000, // Method is either run of Runnable protocol
     // or synchronized or called from them.
@@ -44,7 +44,7 @@ public:
     m_deadlock_free= 0x100000, // Doesn't call any synchronized methods
     m_override     = 0x200000, // Override method of base class
 
-    m_sync_block   = 0x400000 
+    m_sync_block   = 0x400000
     // is called from another method, within a synchronized block
   };
 
@@ -57,24 +57,24 @@ public:
 
   callee_desc*   callees;
   access_desc*   accessors;
-    
+
   graph_vertex*  vertex;
 
   //
   // Chain of methods from derived classes, overriding this method
   //
-  overridden_method* overridden; 
+  overridden_method* overridden;
 
   //
-  // 1 bit in position 'i' of 'null_parameter_mask' means that NULL is 
+  // 1 bit in position 'i' of 'null_parameter_mask' means that NULL is
   // passed as the value of parameter 'i'
   //
-  unsigned       null_parameter_mask; 
+  unsigned       null_parameter_mask;
   //
   // 1 bit in position 'i' of 'unchecked_use_mask' means that formal
   // parameter 'i' is used without check for NULL
   //
-  unsigned       unchecked_use_mask;    
+  unsigned       unchecked_use_mask;
 
   int            code_length;
   byte*          code;
@@ -95,14 +95,14 @@ public:
   void find_access_dependencies();
 
   void build_concurrent_closure();
-  void add_to_concurrent_closure(callee_desc* caller, 
+  void add_to_concurrent_closure(callee_desc* caller,
                                  int call_attr, int depth);
 
   void build_call_graph();
   bool build_call_graph(method_desc* caller, callee_desc* callee,
                         int call_attr);
 
-  int  print_call_path_to(callee_desc* target, int loop_id, int path_id, 
+  int  print_call_path_to(callee_desc* target, int loop_id, int path_id,
                           int call_attr = 0, callee_desc* prev = NULL);
 
   void check_synchronization();
@@ -113,17 +113,17 @@ public:
   int  get_line_number(int pc);
   void message(int msg_code, int pc, ...);
 
-  void check_variable_for_null(int pc, vbm_operand* sp); 
-  void check_array_index(int pc, vbm_operand* sp); 
+  void check_variable_for_null(int pc, vbm_operand* sp);
+  void check_array_index(int pc, vbm_operand* sp);
 
   void basic_blocks_analysis();
 
   void parse_code(constant** constant_pool, const field_desc* is_this);
 
-  method_desc(utf_string const& mth_name, utf_string const& mth_desc, 
-              class_desc* cls_desc, method_desc* chain) 
+  method_desc(utf_string const& mth_name, utf_string const& mth_desc,
+              class_desc* cls_desc, method_desc* chain)
     : component_desc(mth_name, cls_desc), desc(mth_desc)
-    { 
+    {
       callees = NULL;
       accessors = NULL;
       vertex = NULL;
@@ -148,4 +148,7 @@ private:
 const char* compound_name(const char* first, const char* second);
 extern string_pool stringPool; // declared in jlint.cc
 extern field_desc* is_const;
+
+void print_call_sequence(callee_desc* callee, int loop_id, int path_id);
+
 #endif
