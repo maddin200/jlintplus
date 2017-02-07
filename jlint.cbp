@@ -205,7 +205,6 @@
 		<Unit filename="../../graph.hh" />
 		<Unit filename="../../inlines.hh" />
 		<Unit filename="../../jlint.cc" />
-		<Unit filename="../../jlint.d" />
 		<Unit filename="../../jlint.hh" />
 		<Unit filename="../../jlint.msg" />
 		<Unit filename="../../local_context.cc" />
