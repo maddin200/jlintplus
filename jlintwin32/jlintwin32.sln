@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "antic", "antic\antic.vcproj", "{6B78AEC8-EA0F-4C78-8203-639B5FFA9B8C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jlint", "jlint\jlint.vcproj", "{EB00D1AD-9D49-4D2F-9150-73C9F5E1A1A2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0C93CA10-2654-4816-ADA1-9E466B496051} = {0C93CA10-2654-4816-ADA1-9E466B496051}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib\zlib.vcproj", "{0C93CA10-2654-4816-ADA1-9E466B496051}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +24,10 @@ Global
 		{EB00D1AD-9D49-4D2F-9150-73C9F5E1A1A2}.Debug|Win32.Build.0 = Debug|Win32
 		{EB00D1AD-9D49-4D2F-9150-73C9F5E1A1A2}.Release|Win32.ActiveCfg = Release|Win32
 		{EB00D1AD-9D49-4D2F-9150-73C9F5E1A1A2}.Release|Win32.Build.0 = Release|Win32
+		{0C93CA10-2654-4816-ADA1-9E466B496051}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0C93CA10-2654-4816-ADA1-9E466B496051}.Debug|Win32.Build.0 = Debug|Win32
+		{0C93CA10-2654-4816-ADA1-9E466B496051}.Release|Win32.ActiveCfg = Release|Win32
+		{0C93CA10-2654-4816-ADA1-9E466B496051}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
