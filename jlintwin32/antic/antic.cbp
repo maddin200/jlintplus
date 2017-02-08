@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Win32 Release">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/antic/Release/antic" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/antic" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Release" />
 				<Option type="1" />
 				<Option compiler="msvc10" />
@@ -33,7 +33,7 @@
 				</Linker>
 			</Target>
 			<Target title="Win32 Debug">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/antic/Debug/antic" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/antic" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Debug" />
 				<Option type="1" />
 				<Option compiler="msvc10" />
@@ -59,7 +59,7 @@
 				</Linker>
 			</Target>
 			<Target title="ReleaseMinGW">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/antic/ReleaseMinGW/antic" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/ReleaseMinGW/antic" prefix_auto="1" extension_auto="1" />
 				<Option object_output="ReleaseMinGW" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -89,7 +89,7 @@
 				</Linker>
 			</Target>
 			<Target title="DebugMinGW">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/antic/DebugMinGW/antic" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/DebugMinGW/antic" prefix_auto="1" extension_auto="1" />
 				<Option object_output="DebugMinGW" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -118,7 +118,7 @@
 				</Linker>
 			</Target>
 			<Target title="Release Mac">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/antic/Release Mac/antic" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release Mac/antic" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Release Mac" />
 				<Option type="1" />
 				<Option compiler="clang" />
@@ -146,6 +146,21 @@
 					<Add library="odbc32" />
 					<Add library="odbccp32" />
 				</Linker>
+			</Target>
+			<Target title="Release Linux">
+				<Option output="bin/Release Linux/antic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="Release Linux" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
+					<Add option="-fexceptions" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add option="-D_MBCS" />
+				</Compiler>
 			</Target>
 		</Build>
 		<Unit filename="../../antic.c">
