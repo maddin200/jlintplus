@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Win32 Release">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/Release/jlint" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/jlint" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Release" />
 				<Option type="1" />
 				<Option compiler="msvc10" />
@@ -43,7 +43,7 @@
 				</Linker>
 			</Target>
 			<Target title="Win32 Debug">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/Debug/jlint" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/jlint" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Debug" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -71,7 +71,7 @@
 				</Linker>
 			</Target>
 			<Target title="Release Mac">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/Release Mac/jlint" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release Mac/jlint" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Release Mac" />
 				<Option type="1" />
 				<Option compiler="clang" />
@@ -102,7 +102,7 @@
 				</Linker>
 			</Target>
 			<Target title="ReleaseMinGW">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/ReleaseMinGW/jlint" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/ReleaseMinGW/jlint" prefix_auto="1" extension_auto="1" />
 				<Option object_output="ReleaseMinGW" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -140,7 +140,7 @@
 				</Linker>
 			</Target>
 			<Target title="DebugMinGW">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/DebugMinGW/jlint" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/DebugMinGW/jlint" prefix_auto="1" extension_auto="1" />
 				<Option object_output="DebugMinGW" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -171,7 +171,7 @@
 				</Linker>
 			</Target>
 			<Target title="ReleaseLinux">
-				<Option output="C:/Data/Software/jlintplus/jlintwin32/jlint/ReleaseLinux/jlint" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/ReleaseLinux/jlint" prefix_auto="1" extension_auto="1" />
 				<Option object_output="ReleaseLinux" />
 				<Option type="1" />
 				<Option compiler="gcc" />
