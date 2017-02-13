@@ -410,6 +410,7 @@ bool parse_class_file(byte* fp)
   is_this->cls = this_class;
 
   // init. is_const
+  // TODO: shadow variable
   field_desc* is_const = new field_desc(utf_string("<const>"), NULL, NULL);
 
   this_class->attr = access_flags1;
