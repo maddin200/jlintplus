@@ -17,6 +17,7 @@ int method_desc::demangle_method_name(char* buf)
 {
   char* dst = buf;
   const char* src = desc.as_asciz();
+  // TODO: assertion changes variable
   assert(*src++ == '(');
   dst += sprintf(dst, "%s.%s(", cls->name.as_asciz(), name.as_asciz());
   int first_parameter = true;
@@ -161,7 +162,7 @@ void method_desc::find_access_dependencies()
       callee->method->accessor = cls;
     } else if (!cls->in_relationship_with(caller_class)) {
       // Method is called from two unrelated classes, so if this
-      // two methods are exeuted concurretly we will have access conflict
+      // two methods are executed concurrently we will have access conflict
       callee->method->attr &= ~m_serialized;
     }
     if ((!(attr & m_static) && (callee->method->attr & m_static))
@@ -170,7 +171,7 @@ void method_desc::find_access_dependencies()
         //
         // If caller is instance method and callee - static method
         // of the class, or caller is not included in concurrent closure
-        // (and so it can be exeuted in main thread of control), then
+        // (and so it can be executed in main thread of control), then
         // any invocation of callee method from concurrent thread can
         // cause concurrent execution of this method. If no method
         // from concurrent closure invoke this method, then

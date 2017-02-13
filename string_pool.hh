@@ -67,6 +67,7 @@ public:
   }
 
   void clear() {
+	// TODO: protect iter pointer
     for (string_table::iterator it = pool.begin(); it != pool.end(); ++it) {
       free(const_cast<char*>(*it));
       pool.erase(it);

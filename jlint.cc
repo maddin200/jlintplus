@@ -85,6 +85,7 @@ void message_at(int code, utf_string const& file, int line, ...)
 int get_number_of_parameters(utf_string const& str)
 {
   const char* p = str.as_asciz();
+  // TODO: assertion changes variable
   assert(*p++ =='(');
   int n_params = 0;
   while (*p != ')') {
