@@ -96,14 +96,14 @@ public:
 
   void build_concurrent_closure();
   void add_to_concurrent_closure(callee_desc* caller,
-                                 int call_attr, int depth);
+                                 int caller_attr, int depth);
 
   void build_call_graph();
   bool build_call_graph(method_desc* caller, callee_desc* callee,
-                        int call_attr);
+                        int caller_attr);
 
   int  print_call_path_to(callee_desc* target, int loop_id, int path_id,
-                          int call_attr = 0, callee_desc* prev = NULL);
+                          int caller_attr = 0, callee_desc* prev = NULL);
 
   void check_synchronization();
   void check_invocations();
@@ -111,7 +111,7 @@ public:
   bool is_special_method() { return name.first_char() == '<'; }
 
   int  get_line_number(int pc);
-  void message(int msg_code, int pc, ...);
+  void message(int mycode, int pc, ...);
 
   void check_variable_for_null(int pc, vbm_operand* sp);
   void check_array_index(int pc, vbm_operand* sp);

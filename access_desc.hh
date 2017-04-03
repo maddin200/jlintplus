@@ -8,23 +8,23 @@ class field_desc;
 #include "class_desc.hh"
 #include "functions.hh"
 
-class access_desc { 
- public: 
+class access_desc {
+ public:
   access_desc*   next;
   class_desc*    self_class;
   field_desc*    field;
   int            line;
   int            attr;
-  enum { 
+  enum {
     a_self = 0x01, // access to the component of the same class
     a_new  = 0x02  // field of newly created object is accessed
   };
 
-  void message(int msg_code, ...); 
+  void message(int code, ...);
 
-  access_desc(field_desc* desc, class_desc* cls, 
+  access_desc(field_desc* desc, class_desc* cls,
               int lineno, access_desc* chain)
-    { 
+    {
       field = desc;
       next = chain;
       self_class = cls;

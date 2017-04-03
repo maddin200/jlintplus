@@ -19,18 +19,18 @@ class callee_desc {
   void*          backtrace;
   int            line;
   int            attr;
-  enum { 
+  enum {
     i_self          = 0x01, // invoke method of self class
     i_synchronized  = 0x02, // method is invoked from synchronized(){} body
     i_wait_deadlock = 0x04  // invocation can cause deadlock in wait()
   };
 
-  void message(int msg_code, ...); 
-  
-  callee_desc(class_desc* cls, method_desc* mth, callee_desc* chain, 
-              int lineno, int call_attr) 
-    { 
-      self_class = cls;  
+  void message(int code, ...);
+
+  callee_desc(class_desc* cls, method_desc* mth, callee_desc* chain,
+              int lineno, int call_attr)
+    {
+      self_class = cls;
       method = mth;
       next = chain;
       line = lineno;

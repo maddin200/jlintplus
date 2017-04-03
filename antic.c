@@ -92,7 +92,7 @@ typedef enum {
 // functions
 int get(void);
 void unget(int ch);
-void message_at(int myline, int coln, char* msg);
+void message_at(int myline, int mycoln, char* msg);
 void message(char* msg);
 int check_special_character(void);
 int scan(void);
@@ -1209,41 +1209,44 @@ void load_file(char* name, int recursive)
 void usage(void)
 {
     fprintf(stderr,
-	    "Usage: antic [-version] [-java] [-tab <TAB SIZE>] [-relax-else] file|dir {file|dir...}\n");
+	    "Usage: antic [-version] [-java] [-tab <TAB SIZE>] [-relax-else] [-sourcedir] file|dir {file|dir...}\n");
 }
 
 
 int main(int argc, char* argv[])
 {
     int i;
+    int nmodus = 0;
     if (argc == 1) {
-	usage();
-	return 0;
+        usage();
+        return 0;
     }
     for (i = 1; i < argc; i++) {
-	if (*argv[i] == '-') {
-	    if (strcmp(argv[i], "-java") == 0) {
-		force_java = 1;
-	    } else if (strcmp(argv[i], "-tab") == 0 && i+1 < argc) {
-		if (sscanf(argv[++i], "%d", &tab_size) != 1) {
-		    tab_size = 8;
-		    fprintf(stderr, "Bad value '%s' for TAB size parameter\n",
-			    argv[i]);
-		}
-	    } else if (strcmp(argv[i], "-relax-else") == 0) {
-		relax_else = 1;
-	    } else if (strcmp(argv[i], "-version") == 0) {
-		fprintf(stderr,
-			"AntiC - C/C++/Java syntax verifier"
-			", version %s (" __DATE__ ")\n", VERSION);
-		return 0;
-	    } else {
-		fprintf(stderr, "Unrecognized option %s\n", argv[i]);
-		usage();
-	    }
-	} else {
-	    load_file(argv[i], 0);
-	}
+        if (*argv[i] == '-') {
+            if (strcmp(argv[i], "-java") == 0) {
+                force_java = 1;
+            } else if (strcmp(argv[i], "-tab") == 0 && i+1 < argc) {
+                if (sscanf(argv[++i], "%d", &tab_size) != 1) {
+                    tab_size = 8;
+                    fprintf(stderr, "Bad value '%s' for TAB size parameter\n",
+                        argv[i]);
+                }
+            } else if (strcmp(argv[i], "-relax-else") == 0) {
+                relax_else = 1;
+            } else if (strcmp(argv[i], "-version") == 0) {
+                fprintf(stderr,
+                "AntiC - C/C++/Java syntax verifier"
+                ", version %s (" __DATE__ ")\n", VERSION);
+                return 0;
+            } else if (strcmp(argv[i], "-sourcedir") == 0) {
+                nmodus = 2;
+            } else {
+                fprintf(stderr, "Unrecognized option %s\n", argv[i]);
+                usage();
+            }
+        } else {
+            load_file(argv[i], nmodus);
+        }
     }
     printf("Verification completed: %d reported messages\n", n_messages);
     return 0;

@@ -9,7 +9,7 @@
 #include "method_desc.hh"
 #include "overridden_method.hh"
 
-class class_desc { 
+class class_desc {
 public:
   Locks locks; // locks held by current thread
   Locks usedLocks; // locks (other than "this") ever used by current class
@@ -17,14 +17,14 @@ public:
   utf_string     name;
   utf_string     source_file;
   class_desc*    next;
-  class_desc*    collision_chain; 
+  class_desc*    collision_chain;
 
   method_desc*   methods;
 
-  int            attr; 
-  enum class_attrs { 
+  int            attr;
+  enum class_attrs {
     cl_interface = 0x00200,
-    cl_system    = 0x10000      
+    cl_system    = 0x10000
   };
 
   int            n_bases;
@@ -37,7 +37,7 @@ public:
 
   static class_desc* get(utf_string const& str);
 
-  method_desc* get_method(utf_string const& mth_name, 
+  method_desc* get_method(utf_string const& mth_name,
                           utf_string const& mth_desc);
 
   field_desc* get_field(utf_string const& field_name);
@@ -47,7 +47,7 @@ public:
   static class_desc* chain;
 
   bool isa(const char* cls_name);
-  bool isa(class_desc* cls);
+  bool isa(class_desc* base_class);
   bool implements(const char* interface_name);
   bool in_relationship_with(class_desc* cls);
 

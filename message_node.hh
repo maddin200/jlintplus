@@ -11,10 +11,10 @@ public:
   message_node* next;
   char*         text;
 
-  static bool find(char* msg);
-  static void add_to_hash(char* msg);
+  static bool find(char* msg_text);
+  static void add_to_hash(char* msg_text);
 
-  message_node(char* msg) { 
+  message_node(char* msg) {
     text = strdup(msg);
     next = NULL;
   }
